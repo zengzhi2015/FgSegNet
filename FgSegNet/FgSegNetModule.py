@@ -12,25 +12,34 @@ import keras
 from keras.models import Model
 from keras.layers import Activation, Input, Dropout
 from keras.layers.convolutional import Conv2D, Conv2DTranspose, UpSampling2D, Cropping2D, MyUpSampling2D
+"""
+Note: The module MyUpSampling2D is written by the author.
+"""
 from keras.layers.pooling import MaxPooling2D
 from keras import regularizers
 
 class FgSegNetModule(object):
     
     def __init__(self, lr, reg, img_shape, scene, vgg_weights_path):
-        self.lr = lr
-        self.reg = reg
-        self.img_shape = img_shape
-        self.scene = scene
-        self.vgg_weights_path = vgg_weights_path
+        self.lr = lr # Is this the learning rate ??
+        self.reg = reg # The weight for the l2 regularizer for the Tconv
+        self.img_shape = img_shape # the shape of the image ??
+        self.scene = scene # ???
+        self.vgg_weights_path = vgg_weights_path # the path for the vgg_weights
 
     def VGG16(self, x): 
+    """
+    Note: This defines the structure of the vgg16. Note that each layer has a unique name in the definition.
+    """
         
         # Block 1
         x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv1', data_format='channels_last')(x)
         x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv2')(x)
         x = MaxPooling2D((2, 2), strides=(2, 2), name='block1_pool')(x)
-    
+        """
+        Note:
+        data_format: A string, one of channels_last (default) or channels_first. The ordering of the dimensions in the  inputs. channels_last corresponds to inputs with shape (batch, height, width, channels) while channels_first corresponds to inputs with shape (batch, channels, height, width). It defaults to the image_data_format value found in your Keras config file at ~/.keras/keras.json. If you never set it, then it will be "channels_last".
+        """
         # Block 2
         x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv1')(x)
         x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv2')(x)
@@ -54,26 +63,51 @@ class FgSegNetModule(object):
     def transposedConv(self, x):
         
         # block 5
-        x = Conv2DTranspose(64, (1, 1), activation='relu', padding='same', name='block5_tconv1', 
-                                                kernel_regularizer=regularizers.l2(self.reg))(x)
+        x = Conv2DTranspose(64, (1, 1), activation='relu', padding='same', name='block5_tconv1', kernel_regularizer=regularizers.l2(self.reg))(x)
         x = Conv2DTranspose(64, (3, 3), activation='relu', padding='same', name='block5_tconv2')(x)
         x = Conv2DTranspose(512, (1, 1), activation='relu', padding='same', name='block5_tconv3')(x)
+        """
+        Note:
+        Usage of regularizers
+
+        Regularizers allow to apply penalties on layer parameters or layer activity during optimization. These penalties are incorporated in the loss function that the network optimizes.
+
+        The penalties are applied on a per-layer basis. The exact API will depend on the layer, but the layers Dense, Conv1D, Conv2D and Conv3D have a unified API.
+
+        These layers expose 3 keyword arguments:
+
+        kernel_regularizer: instance of keras.regularizers.Regularizer
+        bias_regularizer: instance of keras.regularizers.Regularizer
+        activity_regularizer: instance of keras.regularizers.Regularizer
+        Example
+
+        from keras import regularizers
+        model.add(Dense(64, input_dim=64,
+                        kernel_regularizer=regularizers.l2(0.01),
+                        activity_regularizer=regularizers.l1(0.01)))
+        Available penalties
+
+        keras.regularizers.l1(0.)
+        keras.regularizers.l2(0.)
+        keras.regularizers.l1_l2(0.)
+        """
         
         # block 6
-        x = Conv2DTranspose(64, (1, 1), activation='relu', padding='same', name='block6_tconv1', 
-                                                kernel_regularizer=regularizers.l2(self.reg))(x)
+        x = Conv2DTranspose(64, (1, 1), activation='relu', padding='same', name='block6_tconv1', kernel_regularizer=regularizers.l2(self.reg))(x)
         x = Conv2DTranspose(64, (5, 5), strides=(2, 2), activation='relu', padding='same', name='block6_tconv2')(x)
         x = Conv2DTranspose(256, (1, 1), activation='relu', padding='same', name='block6_tconv3')(x)
         
         # block 7
-        x = Conv2DTranspose(64, (1, 1), activation='relu', padding='same', name='block7_tconv1', 
-                                                kernel_regularizer=regularizers.l2(self.reg))(x)
+        x = Conv2DTranspose(64, (1, 1), activation='relu', padding='same', name='block7_tconv1', kernel_regularizer=regularizers.l2(self.reg))(x)
         x = Conv2DTranspose(64, (3, 3), activation='relu', padding='same', name='block7_tconv2')(x)
         x = Conv2DTranspose(128, (1, 1), activation='relu', padding='same', name='block7_tconv3')(x)
         
         # block 8
-        x = Conv2DTranspose(64, (5, 5), strides=(2, 2), activation='relu', padding='same', name='block8_conv1', 
-                                                kernel_regularizer=regularizers.l2(self.reg))(x)
+        x = Conv2DTranspose(64, (5, 5), strides=(2, 2), activation='relu', padding='same', name='block8_conv1', kernel_regularizer=regularizers.l2(self.reg))(x)
+        """
+        Note: 
+        For each of the Tconv block, there is a regularizer. I am not sure why the regularizer should be used here?
+        """
         
         # block 9
         x = Conv2DTranspose(1, (1, 1), padding='same', name='block9_conv1')(x)
