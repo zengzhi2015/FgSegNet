@@ -4,6 +4,7 @@
 Created on Fri Sep 29 22:57:12 2017
 
 @author: longang
+@comments by Zhi Zeng
 """
 
 import keras
