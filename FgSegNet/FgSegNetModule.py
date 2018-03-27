@@ -116,20 +116,28 @@ class FgSegNetModule(object):
         return x
 
     def initModel (self):
-        h, w, d = self.img_shape
+        h, w, d = self.img_shape # height width dimension
         
         input_1 = Input(shape=(h, w, d), name='ip_scale1')
         vgg_layer_output = self.VGG16(input_1)
         shared_model = Model(inputs=input_1, outputs=vgg_layer_output, name='shared_model')
         shared_model.load_weights(self.vgg_weights_path, by_name=True)
+        """
+        Note:
+        model.load_weights(filepath, by_name=False): loads the weights of the model from a HDF5 file (created by save_weights). By default, the architecture is expected to be unchanged. To load weights into a different architecture (with some layers in common), use by_name=True to load only those layers with the same name.
+        """
         
         unfreeze_layers = ['block4_conv1','block4_conv2', 'block4_conv3']
         for layer in shared_model.layers:
             if(layer.name not in unfreeze_layers):
                 layer.trainable = False
+        """
+        Note:
+        Only the last block of the encoder will be trained.
+        """
                 
         # Scale 1
-        x1_ups = {'streetCornerAtNight':(0,1), 'tramStation':(1,0), 'turbulence2':(1,0)}
+        x1_ups = {'streetCornerAtNight':(0,1), 'tramStation':(1,0), 'turbulence2':(1,0)} # ???
         x1 = shared_model.output
         if(self.scene=='wetSnow'):
             x1 = Cropping2D(cropping=((1, 2),(0, 0)))(x1)
