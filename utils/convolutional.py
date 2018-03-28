@@ -1368,13 +1368,40 @@ class UpSampling2D(Layer):
 
 class MyUpSampling2D(Layer):
     
+    """
+    Note:
+    	@ is called decoration. If we define
+    	@f
+    	@g
+    	def funA(pa)
+    	...
+    	Then funA(x) equals to f(g(funA(x)))
+    	Be careful that @classmethod and @staticmethod in the definition of a class have different meanings.
+    """
     @interfaces.legacy_upsampling2d_support
     def __init__(self, size=(2, 2), num_pixels = (0, 0), data_format=None, **kwargs):
         super(MyUpSampling2D, self).__init__(**kwargs)
+        """
+        Note:
+        	For python 3, this should be 
+        	super().__init__(**kwargs)
+        	num_pixels = (0, 0) is not exist in the original version
+        """
         self.data_format = conv_utils.normalize_data_format(data_format)
         self.size = conv_utils.normalize_tuple(size, 2, 'size')
         self.input_spec = InputSpec(ndim=4)
         self.num_pixels = num_pixels
+        """
+        Note:
+        	self.size indicate the upsampling rate.
+        """
+    """
+    Note:
+    	I am not clear about the useage of interfaces.legacy_upsampling2d_support
+    	Therefore, I could only comprehend the definition of MyUpsampling 2D by comparisons.
+    	There is no difference between this version and the original one.
+    	self.num_pixels = num_pixels is not in the original version
+    """
 
     def compute_output_shape(self, input_shape):
         if self.data_format == 'channels_first':
@@ -1384,6 +1411,11 @@ class MyUpSampling2D(Layer):
                     input_shape[1],
                     height,
                     width)
+        """
+        Note:
+        	+ self.num_pixels[0/1] does not exist in the original version
+        	It seems that the author add a symetrical boarder to the output tensor.
+        """
         elif self.data_format == 'channels_last':
             height = self.size[0] * input_shape[1] + self.num_pixels[0] if input_shape[1] is not None else None
             width = self.size[1] * input_shape[2] + self.num_pixels[1] if input_shape[2] is not None else None
@@ -1395,6 +1427,10 @@ class MyUpSampling2D(Layer):
     def call(self, inputs):
         return K.resize_images(inputs, self.size[0], self.size[1],
                                self.data_format, self.num_pixels)
+    """
+    Note:
+    	The last parameter self.num_pixels does not exist in the original version.
+    """
 
     def get_config(self):
         config = {'size': self.size,
@@ -1402,6 +1438,10 @@ class MyUpSampling2D(Layer):
                   'num_pixels': self.num_pixels}
         base_config = super(MyUpSampling2D, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
+     """
+     Note:
+     	The last item in config does not exist in the original version.
+     """
     
 class UpSampling3D(Layer):
     """Upsampling layer for 3D inputs.
