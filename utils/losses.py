@@ -2,7 +2,7 @@ from __future__ import absolute_import
 import six
 from . import backend as K
 from .utils.generic_utils import deserialize_keras_object
-import tensorflow as tf
+import tensorflow as tf # this is newly imported
 
 def mean_squared_error(y_true, y_pred):
     return K.mean(K.square(y_pred - y_true), axis=-1)
@@ -55,12 +55,16 @@ def sparse_categorical_crossentropy(y_true, y_pred):
 
 def binary_crossentropy(y_true, y_pred):
     void_label = -1.
-    y_pred = tf.reshape(y_pred, [-1])
+    y_pred = tf.reshape(y_pred, [-1]) # pass [-1] to flatten tensor
     y_true = tf.reshape(y_true, [-1])
     idx = tf.where(tf.not_equal(y_true, tf.constant(void_label, dtype=tf.float32)))
     y_pred = tf.gather_nd(y_pred, idx) 
     y_true = tf.gather_nd(y_true, idx)
     return K.mean(K.binary_crossentropy(y_pred, y_true), axis=-1)
+    """
+    Note:
+    	This definition is not the same as the original one. But this definition is competible with the original version.
+    """
 
 def kullback_leibler_divergence(y_true, y_pred):
     y_true = K.clip(y_true, K.epsilon(), 1)
