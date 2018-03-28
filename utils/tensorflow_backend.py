@@ -1765,6 +1765,10 @@ def resize_images(x, height_factor, width_factor, data_format, num_pixels=None):
     # Raises
         ValueError: if `data_format` is neither `"channels_last"` or `"channels_first"`.
     """
+    """
+    Note:
+    	Although the last parameter num_pixels does not exist in the original version, the new version is compatible with the original one.
+    """
     if data_format == 'channels_first':
         original_shape = int_shape(x)
         new_shape = tf.shape(x)[2:]
