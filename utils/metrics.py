@@ -25,6 +25,10 @@ def binary_accuracy(y_true, y_pred):
     y_pred = tf.gather_nd(y_pred, idx) 
     y_true = tf.gather_nd(y_true, idx)
     return K.mean(K.equal(y_true, K.round(y_pred)), axis=-1)
+    """
+    Note:
+    	This definition is different from, but competible with the original one.
+    """
 
 def categorical_accuracy(y_true, y_pred):
     return K.cast(K.equal(K.argmax(y_true, axis=-1),
