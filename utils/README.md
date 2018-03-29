@@ -129,6 +129,8 @@ def resize_images(x, height_factor, width_factor, data_format, num_pixels=None):
 Modify the following definition:
 
 ```
+import tensorflow as tf # this is newly imported
+
 def binary_crossentropy(y_true, y_pred):
     void_label = -1.
     y_pred = tf.reshape(y_pred, [-1]) # pass [-1] to flatten tensor
@@ -148,6 +150,8 @@ def binary_crossentropy(y_true, y_pred):
 Modify the following definition:
 
 ```
+import tensorflow as tf
+
 def binary_accuracy(y_true, y_pred):
     void_label = -1.
     y_pred = tf.reshape(y_pred, [-1])
