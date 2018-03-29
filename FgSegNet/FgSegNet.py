@@ -29,9 +29,13 @@ import os
 #  For reprodocable results
 # =============================================================================
 os.environ['PYTHONHASHSEED'] = '0'
+# Environment variables are accessed through os.environ
+# If PYTHONHASHSEED is set to an integer value, it is used as a fixed seed for generating the hash() of the types covered by the hash randomization.
 np.random.seed(42)
 rn.seed(12345)
 session_conf = tf.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
+# ConfigProto is used to configurate sesson()
+# For both configuration options, if they are unset or set to 0, will default to the number of logical CPU cores. Testing has shown that the default is effective for systems ranging from one CPU with 4 cores to multiple CPUs with 70+ combined logical cores. A common alternative optimization is to set the number of threads in both pools equal to the number of physical cores rather than logical cores.
 from keras import backend as K
 tf.set_random_seed(1234)
 sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
