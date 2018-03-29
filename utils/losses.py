@@ -2,7 +2,7 @@ from __future__ import absolute_import
 import six
 from . import backend as K
 from .utils.generic_utils import deserialize_keras_object
-import tensorflow as tf # this is newly imported
+import tensorflow as tf # this is added by the author
 
 def mean_squared_error(y_true, y_pred):
     return K.mean(K.square(y_pred - y_true), axis=-1)
