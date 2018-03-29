@@ -183,6 +183,10 @@ class FgSegNetModule(object):
                     # upscale by adding number of pixels to each dim.
                     x1 = MyUpSampling2D(size=(1,1), num_pixels=val)(x1)
                     break
+        """
+        Note:
+        	For the first scale, only expending operations are used.
+        """
             
         # Scale 2
         x2_ups = {'tunnelExit_0_35fps':(0,1),'tramCrossroad_1fps':(1,0),'bridgeEntry':(1,1),
@@ -201,6 +205,10 @@ class FgSegNetModule(object):
             elif self.scene==key:
                 x2 = MyUpSampling2D(size=(1, 1), num_pixels=val)(x2)
                 break
+        """
+        Note:
+        	Multiple input fashion in Keras. Nothing but updating and expending.
+        """
             
         # Scale 3
         x3_ups = {'tunnelExit_0_35fps':(2,3),'tramCrossroad_1fps':(3,0),'bridgeEntry':(3,1,),
@@ -216,6 +224,10 @@ class FgSegNetModule(object):
             if self.scene==key:
                 x3 = MyUpSampling2D(size=(1,1), num_pixels=val)(x3)
                 break
+        """
+        Note:
+        	Nothing but upsampling and expending.
+        """
             
         # concatenate feature maps
         top = keras.layers.concatenate([x1, x2, x3], name='feature_concat')
@@ -223,6 +235,10 @@ class FgSegNetModule(object):
             top = MyUpSampling2D(size=(1,1), num_pixels=(3,0))(top)
         elif(self.scene=='skating'):
             top = MyUpSampling2D(size=(1,1), num_pixels=(2,3))(top)
+        """
+        Note:
+        	Concatenate and expending
+        """
         
         # Transposed Conv
         top = self.transposedConv(top)
