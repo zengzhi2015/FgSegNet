@@ -10,6 +10,16 @@ Created on Mon Sep 29 22:22:22 2017
 get_ipython().magic(u'load_ext autoreload')
 get_ipython().magic(u'autoreload 2')
 
+"""
+Note:
+	autoreload ensures that we can run a imported function, then, change the function in an editor and the changed function can be reloaded
+"""
+
+"""
+Note:
+	get_ipython().magic('zzz') equals to %zzz
+"""
+
 import numpy as np
 import tensorflow as tf
 import random as rn
