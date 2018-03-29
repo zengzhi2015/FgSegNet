@@ -15,7 +15,7 @@ from .losses import kullback_leibler_divergence
 from .losses import poisson
 from .losses import cosine_proximity
 from .utils.generic_utils import deserialize_keras_object
-import tensorflow as tf
+import tensorflow as tf # This is added by the author 
 
 def binary_accuracy(y_true, y_pred):
     void_label = -1.
