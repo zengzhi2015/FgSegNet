@@ -30,6 +30,11 @@ class MyUpSampling2D(Layer):
     """
 
     def compute_output_shape(self, input_shape):
+        """
+        Note:
+        	+ self.num_pixels[0/1] does not exist in the original version
+        	It seems that the author add a symetrical boarder to the output tensor.
+        """
         if self.data_format == 'channels_first':
             height = self.size[0] * input_shape[2] + self.num_pixels[0] if input_shape[2] is not None else None
             width = self.size[1] * input_shape[3] + self.num_pixels[1] if input_shape[3] is not None else None
@@ -37,11 +42,6 @@ class MyUpSampling2D(Layer):
                     input_shape[1],
                     height,
                     width)
-        """
-        Note:
-        	+ self.num_pixels[0/1] does not exist in the original version
-        	It seems that the author add a symetrical boarder to the output tensor.
-        """
         elif self.data_format == 'channels_last':
             height = self.size[0] * input_shape[1] + self.num_pixels[0] if input_shape[1] is not None else None
             width = self.size[1] * input_shape[2] + self.num_pixels[1] if input_shape[2] is not None else None
@@ -59,15 +59,15 @@ class MyUpSampling2D(Layer):
     """
 
     def get_config(self):
+        """
+        Note:
+          The last item in config does not exist in the original version.
+        """
         config = {'size': self.size,
                   'data_format': self.data_format,
                   'num_pixels': self.num_pixels}
         base_config = super(MyUpSampling2D, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
-     """
-     Note:
-     	The last item in config does not exist in the original version.
-     """
 ```
 
 ### < keras DIR >\backend\tensorflow_backend.py
