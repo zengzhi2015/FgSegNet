@@ -53,7 +53,7 @@ from keras.utils.data_utils import get_file
 # =============================================================================
 def generateData(train_dir, dataset_dir, scene):
     
-    void_label = -1.
+    void_label = -1. # The masked regions will be labeled as -1
     X_list = []
     Y_list = []
     
@@ -63,17 +63,26 @@ def generateData(train_dir, dataset_dir, scene):
     
     # scan over FgSegNet_dataset for groundtruths
     for root, _, _ in os.walk(train_dir):
+        # Walk though the tree (root, dirs, files)
         gtlist = glob.glob(os.path.join(root,'*.png'))
+        # list all *.png files
         if gtlist:
-            Y_list =  gtlist
+            Y_list = gtlist
+        # I think the following two lines should be add
+        else:
+            Y_list += gtlist
     
     # scan over CDnet2014_dataset for .jpg files
     for root, _, _ in os.walk(dataset_dir):
         inlist = glob.glob(os.path.join(root,'*.jpg'))
         if inlist:
-            X_list =  inlist
+            X_list = inlist
+        # I think the following two lines should be add
+        else:
+            X_list += inlist
     
     # filter matched files        
+    # brutal force match
     X_list_temp = []
     for i in range(len(Y_list)):
         Y_name = os.path.basename(Y_list[i])
@@ -87,7 +96,8 @@ def generateData(train_dir, dataset_dir, scene):
                 X_list_temp.append(X_list[j])
                 break
     X_list = X_list_temp
-    del X_list_temp, inlist, gtlist
+    # The following line is negligable
+    # del X_list_temp, inlist, gtlist
     
     # process training images
     X = []
@@ -96,6 +106,8 @@ def generateData(train_dir, dataset_dir, scene):
         x = kImage.load_img(X_list[i])
         x = kImage.img_to_array(x)
         X.append(x)
+        # what is the type of X ?
+        # Is the range of an element in X [0, 255] or [0,1]?
         
         x = kImage.load_img(Y_list[i], grayscale = True)
         x = kImage.img_to_array(x)
@@ -104,25 +116,28 @@ def generateData(train_dir, dataset_dir, scene):
         x = x.reshape(-1)
         idx = np.where(np.logical_and(x>0.25, x<0.8))[0] # find non-ROI
         if (len(idx)>0):
-            x[idx] = void_label
+            x[idx] = void_label # void_label = -1
+            # After this operation, elements in Y can be only one of [0.0, 1.0, -1.0]
         x = x.reshape(shape)
         x = np.floor(x)
         Y.append(x)
-    del Y_list, X_list, x, idx
-    X = np.asarray(X)
+    # The following line is negligable
+    # del Y_list, X_list, x, idx
+    X = np.asarray(X) # convert X to np.array
     Y = np.asarray(Y)
     
     # Shuffle the training data
-    idx = list(range(X.shape[0]))
+    idx = list(range(X.shape[0])) # np.arange(X.shape[0])
     np.random.shuffle(idx)
     np.random.shuffle(idx)
     X = X[idx]
     Y = Y[idx]
-    del idx
+    # The following line is negligable
+    # del idx
     
     # Image Pyramid
     scale1 = X
-    del X
+    # del X
     scale2 = []
     scale3 = []
     for i in range(0, scale1.shape[0]):
@@ -132,6 +147,8 @@ def generateData(train_dir, dataset_dir, scene):
        del pyramid
     scale2 = np.asarray(scale2)
     scale3 = np.asarray(scale3)
+    # I think the following line should added:
+    scale1 = X/255.
     print (scale1.shape, scale2.shape, scale3.shape)
 
     # compute class weights
@@ -141,7 +158,7 @@ def generateData(train_dir, dataset_dir, scene):
         idx = np.where(y!=void_label)[0]
         if(len(idx)>0):
             y = y[idx]
-        lb = np.unique(y) #  0., 1
+        lb = np.unique(y) #  0., 1.0, -1.0 
         cls_weight = compute_class_weight('balanced', lb , y)
         class_0 = cls_weight[0]
         class_1 = cls_weight[1] if len(lb)>1 else 1.0
