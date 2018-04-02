@@ -154,18 +154,22 @@ def generateData(train_dir, dataset_dir, scene):
     # compute class weights
     cls_weight_list = []
     for i in range(Y.shape[0]):
-        y = Y[i].reshape(-1)
-        idx = np.where(y!=void_label)[0]
+        # For each groundtruth image, the auther compute the class weights. These class weights are stored in a list
+        # I do not know why the author need this.
+        y = Y[i].reshape(-1) # flattern Y
+        idx = np.where(y!=void_label)[0] # for unmasked pixels
         if(len(idx)>0):
-            y = y[idx]
-        lb = np.unique(y) #  0., 1.0, -1.0 
+            y = y[idx] # exclude masked pixels
+        lb = np.unique(y) #  0., 1.0
         cls_weight = compute_class_weight('balanced', lb , y)
+        # cls_weight = n_samples/(n_classes*np.bincount(y))
+        # np.bincount count the num of occurence of each non-neg ints
         class_0 = cls_weight[0]
         class_1 = cls_weight[1] if len(lb)>1 else 1.0
         
         cls_weight_dict = {0:class_0, 1: class_1}
         cls_weight_list.append(cls_weight_dict)
-    del y, idx
+    # del y, idx
     cls_weight_list = np.asarray(cls_weight_list)
     return [scale1, scale2, scale3, Y, cls_weight_list]
     
