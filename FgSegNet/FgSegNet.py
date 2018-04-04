@@ -186,7 +186,9 @@ def train(results, scene, mdl_path, log_dir, vgg_weights_path):
     # vgg_weights_path: path for the vgg16 model
     
     img_shape = results[0][0].shape
+    # results[0] = scale1 (numbers,width,height,channels)
     model = FgSegNetModule(lr, reg, img_shape, scene, vgg_weights_path)
+    # it seems that lr (learning rate) and reg (regulizer weight) are defined outside
     model = model.initModel()
     
     tb = keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=0, batch_size=batch_size, write_graph=False, write_grads=True, write_images=True, embeddings_freq=0, embeddings_layer_names=None, embeddings_metadata=None)
