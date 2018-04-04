@@ -102,6 +102,7 @@ def generateData(train_dir, dataset_dir, scene):
     # process training images
     X = []
     Y = []
+    # Load all images and modify the lables
     for i in range(0, len(X_list)):
         x = kImage.load_img(X_list[i])
         x = kImage.img_to_array(x)
@@ -171,6 +172,7 @@ def generateData(train_dir, dataset_dir, scene):
         cls_weight_list.append(cls_weight_dict)
     # del y, idx
     cls_weight_list = np.asarray(cls_weight_list)
+    # Three kinds of inputs, one outputs, and one weight list
     return [scale1, scale2, scale3, Y, cls_weight_list]
     
 def train(results, scene, mdl_path, log_dir, vgg_weights_path):
