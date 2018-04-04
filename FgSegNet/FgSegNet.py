@@ -53,6 +53,8 @@ from keras.utils.data_utils import get_file
 # =============================================================================
 def generateData(train_dir, dataset_dir, scene):
     
+    # It is weired that the parameter 'scene'is not used in the function
+    
     void_label = -1. # The masked regions will be labeled as -1
     X_list = []
     Y_list = []
@@ -176,6 +178,13 @@ def generateData(train_dir, dataset_dir, scene):
     return [scale1, scale2, scale3, Y, cls_weight_list]
     
 def train(results, scene, mdl_path, log_dir, vgg_weights_path):
+    
+    # results: [scale1, scale2, scale3, Y, cls_weight_list]
+    # scene: string for the name of the scene (link 'baseline')
+    # mdl_path: store checkpoints of tensorflow
+    # log_dir: used for tensorboard
+    # vgg_weights_path: path for the vgg16 model
+    
     img_shape = results[0][0].shape
     model = FgSegNetModule(lr, reg, img_shape, scene, vgg_weights_path)
     model = model.initModel()
