@@ -230,7 +230,7 @@ num_frames = 50 # either 50 or 200 frames
 reduce_factor = 0.1
 num_patience = 6
 lr = 1e-4
-reg=5e-4
+reg=5e-4 # weight of regularizer
 epoch = 60 if num_frames==50 else 50 # 50f->60epochs, 200f->50epochs
 batch_size = 1
 # =============================================================================
@@ -250,6 +250,7 @@ main_dir = 'FgSegNet'
 main_mdl_dir = os.path.join(main_dir,'models', 'f' + str(num_frames))
 main_log_dir = os.path.join(main_dir,'logs', 'f' + str(num_frames))
 vgg_weights_path = os.path.join(main_dir, 'vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5')
+# The following codes are used to download the vgg16_weights
 if not os.path.exists(vgg_weights_path):
     # keras func
     WEIGHTS_PATH_NO_TOP = 'https://github.com/fchollet/deep-learning-models/releases/download/v0.1/vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5'
@@ -280,4 +281,4 @@ for category, scene_list in dataset.items():
 
         results = generateData(train_dir, dataset_dir, scene)
         train(results, scene, mdl_path, log_dir, vgg_weights_path)
-        del results
+        # del results
